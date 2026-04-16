@@ -1,5 +1,18 @@
 <?php
 // config/config.php
+define('APP_ENV', 'development'); // 'development' or 'production'
+define('BASE_URL', APP_ENV === 'production' ? 'https://yourdomain.com' : 'http://localhost/Wander_Local');
+
+if (APP_ENV === 'development') {
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
+} else {
+    ini_set('display_errors', 0);
+    ini_set('display_startup_errors', 0);
+    error_reporting(0);
+}
+// End config additions
 session_start(); // Automatically start session globally
 
 // ------------------------------------------------------------------------

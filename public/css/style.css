@@ -1,0 +1,71 @@
+/* public/css/style.css */
+
+/* Mobile Bottom Navigation */
+.mobile-bottom-nav {
+    display: none;
+}
+
+@media (max-width: 767px) {
+    .mobile-bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: #fff;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        z-index: 1050;
+        justify-content: space-around;
+        padding: 0.5rem 0;
+    }
+    
+    .mobile-bottom-nav a {
+        color: #6c757d;
+        text-align: center;
+        font-size: 0.75rem;
+        text-decoration: none;
+        flex: 1;
+    }
+    
+    .mobile-bottom-nav a i {
+        display: block;
+        font-size: 1.25rem;
+        margin-bottom: 2px;
+    }
+    
+    .mobile-bottom-nav a.active {
+        color: var(--bs-primary);
+    }
+
+    body {
+        padding-bottom: 70px; /* Space for nav */
+    }
+
+    /* Responsive adjustments */
+    .filter-sidebar {
+        /* Example of offcanvas behavior can be wired via JS/Bootstrap classes */
+        position: fixed;
+        top: 0; left: -100%;
+        width: 80%; height: 100%;
+        z-index: 1060;
+        background: #fff;
+        transition: left 0.3s;
+    }
+    .filter-sidebar.open { left: 0; }
+    
+    .booking-sidebar {
+        position: static;
+        width: 100%;
+        margin-top: 2rem;
+    }
+}
+
+/* Prevent iOS Zoom on focus */
+input, textarea, select {
+    font-size: 16px !important;
+}
+
+/* Global fixes */
+body {
+    overflow-x: hidden;
+}
