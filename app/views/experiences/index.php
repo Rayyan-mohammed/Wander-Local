@@ -164,21 +164,21 @@
             <?php else: ?>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <?php foreach($data['experiences'] as $exp): ?>
-                        <div class="group relative bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 border border-accent/40 flex flex-col h-full hover:-translate-y-1">
+                        <div class="group relative bg-white pos-relative rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 border border-accent/40 flex flex-col h-full hover:-translate-y-1">
                             <div class="relative aspect-[4/3] overflow-hidden bg-gray-100">
                                 <img src="<?= htmlspecialchars($exp->image) ?>" alt="<?= htmlspecialchars($exp->title) ?>" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
                                 
                                 <!-- Vanilla JS Save toggle -->
-                                <button onclick="this.querySelector('svg').classList.toggle('fill-primary'); this.querySelector('svg').classList.toggle('text-primary'); this.querySelector('svg').classList.toggle('text-gray-600'); event.preventDefault();" class="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur rounded-full hover:bg-white transition-colors shadow-sm">
+                                <button onclick="this.querySelector('svg').classList.toggle('fill-primary'); this.querySelector('svg').classList.toggle('text-primary'); this.querySelector('svg').classList.toggle('text-gray-600'); event.preventDefault();" class="absolute top-3 right-3 z-10 p-2 bg-white/90 backdrop-blur rounded-full hover:bg-white transition-colors shadow-sm">
                                     <svg class="w-5 h-5 text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                                 </button>
                                 
-                                <div class="absolute top-3 left-3 px-3 py-1 bg-white/95 backdrop-blur shadow-sm rounded-full text-xs font-black text-secondary uppercase tracking-wider">
+                                <div class="absolute top-3 left-3 px-3 py-1 z-10 bg-white/95 backdrop-blur shadow-sm rounded-full text-xs font-black text-secondary uppercase tracking-wider">
                                     <?= htmlspecialchars($exp->category) ?>
                                 </div>
                             </div>
                             
-                            <div class="p-5 flex flex-col flex-1">
+                            <div class="p-5 flex flex-col flex-1 relative z-10">
                                 <div class="flex justify-between items-start mb-3 gap-2">
                                     <a href="<?= URLROOT ?>/experiences/show/<?= $exp->id ?>" class="font-bold text-lg text-secondary leading-tight group-hover:text-primary transition-colors line-clamp-2">
                                         <?= htmlspecialchars($exp->title) ?>
@@ -198,6 +198,37 @@
                                 <div class="mt-auto pt-4 border-t border-accent/40 flex items-center justify-between">
                                     <div class="flex items-center gap-2.5">
                                         <div class="relative">
+                                            <img src="<?= htmlspecialchars($exp->hostAvatar) ?>" alt="<?= htmlspecialchars($exp->host) ?>" class="w-8 h-8 rounded-full border-2 border-white shadow-sm object-cover" />
+                                            <?php if($exp->verified): ?>
+                                                <div class="absolute -bottom-1 -right-1 bg-blue-500 rounded-full p-0.5 border-2 border-white text-white">
+                                                    <svg class="w-2 h-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                        <span class="text-sm font-black text-secondary">by <?= htmlspecialchars($exp->host) ?></span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-2xl font-black text-secondary tracking-tight">₹<?= number_format($exp->price) ?></span>
+                                        <span class="text-[10px] uppercase font-bold text-gray-400 block tracking-widest">/ PERSON</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="<?= URLROOT ?>/experiences/show/<?= $exp->id ?>" class="absolute inset-0 z-0"><span class="sr-only">View Experience</span></a>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+
+                <div class="mt-16 text-center">
+                    <button class="bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white px-10 py-3.5 rounded-full font-bold shadow-md transition transform hover:-translate-y-0.5 duration-300">
+                        Load More Experiences
+                    </button>
+                </div>
+            <?php endif; ?>
+        </main>
+    </div>
+</div>
+
+<?php require_once '../app/views/components/footer.php'; ?>
                                             <img src="<?= htmlspecialchars($exp->hostAvatar) ?>" alt="<?= htmlspecialchars($exp->host) ?>" class="w-9 h-9 rounded-full border-2 border-white shadow-sm object-cover" />
                                             <?php if($exp->verified): ?>
                                                 <div class="absolute -bottom-1 -right-1 bg-blue-500 rounded-full p-0.5 border-2 border-white" title="Verified Host">
