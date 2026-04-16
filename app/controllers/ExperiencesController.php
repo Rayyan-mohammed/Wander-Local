@@ -6,20 +6,8 @@ class ExperiencesController extends Controller {
         $this->experienceModel = $this->model('Experience');
     }
 
-    public function index() {
-        // --- MOCK DATA ---
-        $cities = [
-            "Tokyo, Japan", "Kyoto, Japan", "Osaka, Japan", "Paris, France", 
-            "Rome, Italy", "Milan, Italy", "New York, USA", "Oaxaca, Mexico", 
-            "Mexico City, Mexico", "Lisbon, Portugal", "Porto, Portugal", "London, UK", 
-            "Barcelona, Spain", "Madrid, Spain", "Berlin, Germany", "Munich, Germany", 
-            "Vienna, Austria", "Athens, Greece", "Istanbul, Turkey", "Marrakech, Morocco"
-        ];
-
-        $categories = ["Food", "Workshop", "Nature", "Art", "History", "Nightlife", "Adventure"];
-        $durations = ["Half-day", "Full-day", "Multi-day"];
-
-        $mock_experiences = [
+    private function getMockExperiences() {
+        return [
             (object)["id" => 1, "title" => "Secret Ramen Alleys", "host" => "Kenji", "hostAvatar" => "https://i.pravatar.cc/150?u=kenji", "verified" => true, "location" => "Tokyo, Japan", "category" => "Food", "duration" => "Half-day", "price" => 45, "rating" => 4.9, "reviews" => 124, "image" => "https://images.pexels.com/photos/1907246/pexels-photo-1907246.jpeg?auto=compress&cs=tinysrgb&w=600"],
             (object)["id" => 2, "title" => "Traditional Kintsugi Workshop", "host" => "Yuki", "hostAvatar" => "https://i.pravatar.cc/150?u=yuki", "verified" => true, "location" => "Kyoto, Japan", "category" => "Workshop", "duration" => "Half-day", "price" => 85, "rating" => 5.0, "reviews" => 89, "image" => "https://images.pexels.com/photos/1036856/pexels-photo-1036856.jpeg?auto=compress&cs=tinysrgb&w=600"],
             (object)["id" => 3, "title" => "Hidden Catacombs Tour", "host" => "Marco", "hostAvatar" => "https://i.pravatar.cc/150?u=marco", "verified" => false, "location" => "Rome, Italy", "category" => "History", "duration" => "Half-day", "price" => 35, "rating" => 4.7, "reviews" => 312, "image" => "https://images.pexels.com/photos/1105786/pexels-photo-1105786.jpeg?auto=compress&cs=tinysrgb&w=600"],
@@ -36,6 +24,40 @@ class ExperiencesController extends Controller {
             (object)["id" => 14, "title" => "Azulejo Tile Painting", "host" => "Maria", "hostAvatar" => "https://i.pravatar.cc/150?u=maria", "verified" => false, "location" => "Porto, Portugal", "category" => "Workshop", "duration" => "Half-day", "price" => 45, "rating" => 4.6, "reviews" => 56, "image" => "https://images.pexels.com/photos/1328891/pexels-photo-1328891.jpeg?auto=compress&cs=tinysrgb&w=600"],
             (object)["id" => 15, "title" => "Volcano Hiking", "host" => "Alejandro", "hostAvatar" => "https://i.pravatar.cc/150?u=alejandro", "verified" => true, "location" => "Mexico City, Mexico", "category" => "Adventure", "duration" => "Full-day", "price" => 130, "rating" => 4.9, "reviews" => 110, "image" => "https://images.pexels.com/photos/933054/pexels-photo-933054.jpeg?auto=compress&cs=tinysrgb&w=600"]
         ];
+    }
+
+    private function mapMockExperienceToDetail($mock) {
+        return (object)[
+            'id' => $mock->id,
+            'title' => $mock->title,
+            'description' => 'Discover a handcrafted local experience hosted by passionate locals.',
+            'price' => $mock->price,
+            'duration' => $mock->duration,
+            'category' => $mock->category,
+            'location' => $mock->location,
+            'image_url' => $mock->image,
+            'host_name' => $mock->host,
+            'host_bio' => 'Local host sharing authentic stories, culture, and practical tips from the city.',
+            'host_languages' => 'English',
+            'is_verified' => $mock->verified,
+            'avatar_url' => $mock->hostAvatar
+        ];
+    }
+
+    public function index() {
+        // --- MOCK DATA ---
+        $cities = [
+            "Tokyo, Japan", "Kyoto, Japan", "Osaka, Japan", "Paris, France", 
+            "Rome, Italy", "Milan, Italy", "New York, USA", "Oaxaca, Mexico", 
+            "Mexico City, Mexico", "Lisbon, Portugal", "Porto, Portugal", "London, UK", 
+            "Barcelona, Spain", "Madrid, Spain", "Berlin, Germany", "Munich, Germany", 
+            "Vienna, Austria", "Athens, Greece", "Istanbul, Turkey", "Marrakech, Morocco"
+        ];
+
+        $categories = ["Food", "Workshop", "Nature", "Art", "History", "Nightlife", "Adventure"];
+        $durations = ["Half-day", "Full-day", "Multi-day"];
+
+        $mock_experiences = $this->getMockExperiences();
 
         // Get filters
         $q = isset($_GET['q']) ? $_GET['q'] : '';
@@ -87,19 +109,18 @@ class ExperiencesController extends Controller {
     public function show($id) {
         $experience = $this->experienceModel->getExperienceById($id);
 
-        // Fallback for mock experiences that aren't in the database yet
         if(!$experience) {
-            $experience = clone (object)[
-                'id' => $id,
-                'title' => 'Wander Local Experience ' . $id,
-                'category' => 'Culture',
-                'location' => 'Worldwide',
-                'duration' => 'Flexible',
-                'price' => 75,
-                'host_name' => 'Local Host',
-                'description' => 'A unique and memorable local experience for ID ' . $id . '.',
-                'is_verified' => true
-            ];
+            foreach($this->getMockExperiences() as $mockExperience) {
+                if((int)$mockExperience->id === (int)$id) {
+                    $experience = $this->mapMockExperienceToDetail($mockExperience);
+                    break;
+                }
+            }
+
+            if(!$experience) {
+                header('Location: ' . URLROOT . '/experiences');
+                exit;
+            }
         }
 
         $data = [
