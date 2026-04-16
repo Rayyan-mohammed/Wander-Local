@@ -8,6 +8,11 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'host') {
+    header('Location: ' . BASE_URL . '/pages/blog.php?error=localists_only');
+    exit;
+}
+
 $user_id = $_SESSION['user_id'];
 $post_id = $_GET['id'] ?? null;
 $post = null;
@@ -143,7 +148,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
         } catch (PDOException $e) {
-            $errors[] = "Database error: " . $e->getMessage();
+            error_log('write_post.php: ' . $e->getMessage());
+            $errors[] = "Unable to save your story right now. Please try again.";
         }
     }
 }

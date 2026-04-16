@@ -5,6 +5,7 @@ require_once __DIR__ . '/../config/db.php';
 
 $category = $_GET['c'] ?? '';
 $search = $_GET['q'] ?? '';
+$localist = (int)($_GET['localist'] ?? 0);
 $page = (int)($_GET['p'] ?? 1);
 $limit = 6;
 $offset = ($page - 1) * $limit;
@@ -21,6 +22,11 @@ if ($search) {
     $whereStr .= " AND (bp.title LIKE ? OR bp.excerpt LIKE ?)";
     $params[] = "%$search%";
     $params[] = "%$search%";
+}
+
+if ($localist > 0) {
+    $whereStr .= " AND bp.author_id = ?";
+    $params[] = $localist;
 }
 
 // Ensure columns exist (Development helper if table doesn't have likes count)
@@ -70,6 +76,13 @@ try {
         $trending = $pdo->query("SELECT title, slug, cover_image, created_at FROM blog_posts WHERE status='published' ORDER BY views DESC LIMIT 4")->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    $activeLocalist = null;
+    if ($localist > 0) {
+        $activeLocalistStmt = $pdo->prepare("SELECT id, name FROM users WHERE id = ? AND role = 'host'");
+        $activeLocalistStmt->execute([$localist]);
+        $activeLocalist = $activeLocalistStmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     // Categories Breakdown
     $catStmt = $pdo->query("SELECT category, COUNT(*) as cnt FROM blog_posts WHERE status = 'published' AND category IS NOT NULL GROUP BY category ORDER BY cnt DESC");
     $categories = $catStmt->fetchAll(PDO::FETCH_ASSOC);
@@ -98,6 +111,19 @@ try {
     ");
     $featuredHost = $fhStmt->fetch(PDO::FETCH_ASSOC);
 
+    // Most active localists by published stories
+    $localistsStmt = $pdo->query(" 
+        SELECT u.id, u.name, u.avatar, hp.city, COUNT(bp.id) as post_count
+        FROM users u
+        JOIN blog_posts bp ON bp.author_id = u.id AND bp.status = 'published'
+        LEFT JOIN host_profiles hp ON hp.user_id = u.id
+        WHERE u.role = 'host'
+        GROUP BY u.id, u.name, u.avatar, hp.city
+        ORDER BY post_count DESC, u.name ASC
+        LIMIT 5
+    ");
+    $topLocalists = $localistsStmt->fetchAll(PDO::FETCH_ASSOC);
+
 } catch (PDOException $e) {
     die("Database Error: " . $e->getMessage());
 }
@@ -112,6 +138,12 @@ $featuredPost = $page === 1 && empty($search) && empty($category) && !empty($pos
         <div class="text-center mb-5 pb-3">
             <h1 class="display-4 fw-bold font-heading text-dark mb-3">Stories from the Road</h1>
             <p class="text-muted fs-5 mb-0">Discover local tips, travel diaries, and hidden gems.</p>
+            <?php if (!empty($activeLocalist)): ?>
+                <div class="mt-3">
+                    <span class="badge bg-primary bg-opacity-10 text-primary-custom px-3 py-2 rounded-pill">Filtered by localist: <?= htmlspecialchars($activeLocalist['name']) ?></span>
+                    <a href="<?= BASE_URL ?>/pages/blog.php" class="btn btn-sm btn-outline-secondary rounded-pill ms-2">Clear</a>
+                </div>
+            <?php endif; ?>
         </div>
 
         <!-- Filter Bar -->
@@ -284,6 +316,27 @@ $featuredPost = $page === 1 && empty($search) && empty($category) && !empty($pos
                     <div class="d-flex flex-wrap gap-2">
                         <?php foreach($popularTags as $tag): ?>
                             <a href="#" class="badge bg-light text-secondary text-decoration-none border px-3 py-2 rounded-pill fw-medium hover-bg-primary transition">#<?= htmlspecialchars($tag) ?></a>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                <?php endif; ?>
+
+                <!-- Top Localists -->
+                <?php if (!empty($topLocalists)): ?>
+                <div class="bg-white rounded-4 shadow-sm border p-4 mb-4">
+                    <h5 class="fw-bold font-heading border-bottom pb-3 mb-4">Top Localist Writers</h5>
+                    <div class="d-flex flex-column gap-3">
+                        <?php foreach ($topLocalists as $writer): ?>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <a href="<?= BASE_URL ?>/pages/host.php?id=<?= (int)$writer['id'] ?>" class="text-decoration-none d-flex align-items-center gap-2 text-dark">
+                                    <img src="<?= htmlspecialchars($writer['avatar'] ?: 'https://ui-avatars.com/api/?name=' . urlencode($writer['name'])) ?>" class="rounded-circle" width="34" height="34" alt="<?= htmlspecialchars($writer['name']) ?>">
+                                    <div>
+                                        <div class="fw-bold small"><?= htmlspecialchars($writer['name']) ?></div>
+                                        <div class="text-muted" style="font-size: 0.75rem;"><?= htmlspecialchars($writer['city'] ?: 'Local Host') ?></div>
+                                    </div>
+                                </a>
+                                <a href="<?= BASE_URL ?>/pages/blog.php?localist=<?= (int)$writer['id'] ?>" class="badge bg-light text-dark border text-decoration-none"><?= (int)$writer['post_count'] ?> stories</a>
+                            </div>
                         <?php endforeach; ?>
                     </div>
                 </div>

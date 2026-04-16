@@ -6,6 +6,16 @@ ALTER TABLE experiences ADD COLUMN IF NOT EXISTS duration_hours DECIMAL(5,2) DEF
 ALTER TABLE experiences ADD COLUMN IF NOT EXISTS city VARCHAR(100) DEFAULT NULL;
 ALTER TABLE experiences ADD COLUMN IF NOT EXISTS cover_image VARCHAR(255) DEFAULT NULL;
 
+CREATE TABLE IF NOT EXISTS localist_follows (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    follower_id INT NOT NULL,
+    localist_id INT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_localist_follows_follower FOREIGN KEY (follower_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_localist_follows_localist FOREIGN KEY (localist_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE KEY uq_localist_follows_pair (follower_id, localist_id)
+);
+
 -- Make the two original experiences render with reliable public image links.
 UPDATE experiences
 SET image_url = 'https://images.pexels.com/photos/1907246/pexels-photo-1907246.jpeg?auto=compress&cs=tinysrgb&w=900',
@@ -66,3 +76,12 @@ cover_image = VALUES(cover_image),
 status = VALUES(status),
 avg_rating = VALUES(avg_rating),
 total_bookings = VALUES(total_bookings);
+
+INSERT INTO localist_follows (follower_id, localist_id)
+VALUES
+(3, 1),
+(3, 2),
+(5, 1),
+(5, 2)
+ON DUPLICATE KEY UPDATE
+created_at = created_at;

@@ -53,6 +53,28 @@ try {
     $rStmt->execute([$post['category'], $post['id']]);
     $related = $rStmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // Fetch experiences from this localist for blog-to-booking flow
+    $authorExperiencesStmt = $pdo->prepare(" 
+        SELECT id, title, slug, cover_image, city, country, price, avg_rating
+        FROM experiences
+        WHERE host_id = ? AND status = 'active'
+        ORDER BY avg_rating DESC, created_at DESC
+        LIMIT 3
+    ");
+    $authorExperiencesStmt->execute([$post['current_author_id']]);
+    $authorExperiences = $authorExperiencesStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $authorFollowersStmt = $pdo->prepare("SELECT COUNT(*) FROM localist_follows WHERE localist_id = ?");
+    $authorFollowersStmt->execute([$post['current_author_id']]);
+    $authorFollowersCount = (int)$authorFollowersStmt->fetchColumn();
+
+    $isFollowingAuthor = false;
+    if (isset($_SESSION['user_id']) && (int)$_SESSION['user_id'] !== (int)$post['current_author_id']) {
+        $authorFollowStmt = $pdo->prepare("SELECT 1 FROM localist_follows WHERE follower_id = ? AND localist_id = ?");
+        $authorFollowStmt->execute([(int)$_SESSION['user_id'], (int)$post['current_author_id']]);
+        $isFollowingAuthor = (bool)$authorFollowStmt->fetchColumn();
+    }
+
     $tags = array_filter(array_map('trim', explode(',', $post['tags'] ?? '')));
 
 } catch (PDOException $e) {
@@ -68,7 +90,7 @@ $read_time = $post['read_time_mins'] ?: max(1, ceil($word_count / 200));
 
 ?>
 
-<div x-data="postApp(<?= $post['id'] ?>, <?= $liked ? 'true' : 'false' ?>, <?= $likes_count ?>)">
+<div x-data="postApp(<?= $post['id'] ?>, <?= $liked ? 'true' : 'false' ?>, <?= $likes_count ?>, <?= (int)$post['current_author_id'] ?>, <?= $isFollowingAuthor ? 'true' : 'false' ?>, <?= $authorFollowersCount ?>)">
     <!-- Article Header -->
     <header class="bg-dark text-white position-relative" style="min-height: 450px;">
         <!-- Background Image -->
@@ -166,13 +188,48 @@ $read_time = $post['read_time_mins'] ?: max(1, ceil($word_count / 200));
                             <div>
                                 <h4 class="fw-bold font-heading mb-1 text-center text-sm-start">Written by <?= htmlspecialchars($post['author_name']) ?> <span class="badge bg-primary bg-opacity-10 text-primary-custom ms-2 align-middle" style="font-size: 0.7rem;"><?= htmlspecialchars(ucfirst($post['author_role'])) ?></span></h4>
                                 <p class="text-muted text-center text-sm-start">Passionate explorer and storyteller sharing local insights and hidden gems from around the world.</p>
-                                <div class="text-center text-sm-start">
+                                <div class="d-flex gap-2 align-items-center justify-content-center justify-content-sm-start flex-wrap">
                                     <a href="<?= BASE_URL ?>/pages/host.php?id=<?= $post['current_author_id'] ?>" class="btn btn-outline-dark rounded-pill btn-sm fw-bold px-4">View Profile</a>
+                                    <?php if ($post['author_role'] === 'host' && isset($_SESSION['user_id']) && (int)$_SESSION['user_id'] !== (int)$post['current_author_id']): ?>
+                                        <button @click="toggleFollowAuthor" class="btn btn-sm rounded-pill fw-bold px-4" :class="isFollowingAuthor ? 'btn-outline-primary' : 'btn-primary'">
+                                            <i class="fa-solid" :class="isFollowingAuthor ? 'fa-user-check' : 'fa-user-plus'"></i>
+                                            <span x-text="isFollowingAuthor ? 'Following' : 'Follow Localist'"></span>
+                                        </button>
+                                    <?php endif; ?>
+                                    <?php if ($post['author_role'] === 'host'): ?>
+                                        <span class="badge bg-light text-dark border rounded-pill px-3 py-2"><span x-text="authorFollowersCount"></span> followers</span>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <?php if (!empty($authorExperiences)): ?>
+                    <div class="mb-5">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h3 class="fw-bold font-heading mb-0">Book an Experience with <?= htmlspecialchars(explode(' ', $post['author_name'])[0]) ?></h3>
+                            <a href="<?= BASE_URL ?>/pages/host.php?id=<?= (int)$post['current_author_id'] ?>" class="btn btn-sm btn-outline-primary rounded-pill fw-bold px-3">See More</a>
+                        </div>
+                        <div class="row g-4">
+                            <?php foreach ($authorExperiences as $exp): ?>
+                                <div class="col-md-6 col-xl-4">
+                                    <a href="<?= BASE_URL ?>/pages/experience.php?slug=<?= htmlspecialchars($exp['slug']) ?>" class="card h-100 border-0 shadow-sm rounded-4 text-decoration-none text-dark overflow-hidden hover-shadow transition">
+                                        <img src="<?= htmlspecialchars($exp['cover_image'] ?: 'https://images.unsplash.com/photo-1521295121783-8a321d551ad2?w=800&q=80') ?>" class="w-100 object-fit-cover" style="height: 160px;" alt="<?= htmlspecialchars($exp['title']) ?>">
+                                        <div class="card-body">
+                                            <h6 class="fw-bold mb-2 text-truncate-2"><?= htmlspecialchars($exp['title']) ?></h6>
+                                            <div class="text-muted small mb-2"><i class="fa-solid fa-location-dot me-1"></i><?= htmlspecialchars(($exp['city'] ?? 'Local') . ', ' . ($exp['country'] ?? 'Country')) ?></div>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span class="text-dark fw-bold">$<?= number_format((float)$exp['price'], 2) ?></span>
+                                                <span class="text-muted small"><i class="fa-solid fa-star text-warning me-1"></i><?= number_format((float)$exp['avg_rating'], 1) ?></span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
 
             </div>
 
@@ -248,14 +305,19 @@ $read_time = $post['read_time_mins'] ?: max(1, ceil($word_count / 200));
 .scale-up { transform: scale(1.1); }
 .scale-down { transform: scale(1); }
 .transition { transition: all 0.2s ease-in-out; }
+.hover-shadow { transition: transform 0.2s, box-shadow 0.2s; }
+.hover-shadow:hover { transform: translateY(-4px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important; }
 </style>
 
 <script>
 document.addEventListener('alpine:init', () => {
-    Alpine.data('postApp', (postId, initialLiked, initialCount) => ({
+    Alpine.data('postApp', (postId, initialLiked, initialCount, authorId, initialFollowing, initialFollowersCount) => ({
         postId: postId,
         isLiked: initialLiked,
         likeCount: initialCount,
+        authorId: authorId,
+        isFollowingAuthor: initialFollowing,
+        authorFollowersCount: initialFollowersCount,
         isLoggedIn: <?= isset($_SESSION['user_id']) ? 'true' : 'false' ?>,
 
         async toggleLike() {
@@ -292,6 +354,34 @@ document.addEventListener('alpine:init', () => {
             navigator.clipboard.writeText(window.location.href).then(() => {
                 alert('Link copied to clipboard!');
             });
+        },
+
+        async toggleFollowAuthor() {
+            if (!this.isLoggedIn) {
+                window.location.href = '<?= BASE_URL ?>/auth/login.php';
+                return;
+            }
+
+            try {
+                const response = await fetch('<?= BASE_URL ?>/api/localist_follow_toggle.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ localist_id: this.authorId })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    this.isFollowingAuthor = data.following;
+                    this.authorFollowersCount = data.followers_count;
+                } else {
+                    alert(data.message || 'Could not update follow status.');
+                }
+            } catch (error) {
+                alert('Could not update follow status right now.');
+            }
         }
     }));
 });

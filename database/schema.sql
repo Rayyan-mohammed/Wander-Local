@@ -151,6 +151,16 @@ CREATE TABLE `wishlists` (
   UNIQUE(`user_id`, `experience_id`)
 );
 
+CREATE TABLE `localist_follows` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `follower_id` INT NOT NULL,
+  `localist_id` INT NOT NULL,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`follower_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`localist_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+  UNIQUE(`follower_id`, `localist_id`)
+);
+
 CREATE TABLE `password_resets` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `user_id` INT NOT NULL,
@@ -173,6 +183,7 @@ CREATE INDEX idx_blog_slug ON blog_posts(slug);
 CREATE INDEX idx_blog_author ON blog_posts(author_id);
 CREATE INDEX idx_blog_status ON blog_posts(status);
 CREATE INDEX idx_reviews_reviewer ON reviews(reviewer_id);
+CREATE INDEX idx_localist_follows_localist ON localist_follows(localist_id);
 
 -- INSERT SEED DATA
 
@@ -262,6 +273,13 @@ INSERT INTO `wishlists` (`id`, `user_id`, `experience_id`) VALUES
 (3, 5, 1),
 (4, 5, 3),
 (5, 6, 2);
+
+INSERT INTO `localist_follows` (`id`, `follower_id`, `localist_id`) VALUES
+(1, 3, 1),
+(2, 3, 2),
+(3, 5, 1),
+(4, 6, 4),
+(5, 5, 4);
 
 INSERT INTO `password_resets` (`id`, `user_id`, `token`, `expires_at`) VALUES
 (1, 5, 'reset_token_maya_20260416', '2026-04-16 23:59:59'),
