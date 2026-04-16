@@ -17,12 +17,11 @@
         <!-- Search Bar -->
         <form action="<?= URLROOT ?>/experiences" method="GET" class="flex flex-col md:flex-row items-center bg-white p-2 rounded-lg shadow-xl shadow-secondary/10 max-w-3xl mx-auto border border-accent/50">
             <div class="flex-1 w-full relative">
-                <span class="absolute left-4 top-3.5 text-gray-400">ðŸ“</span>
                 <input 
                     type="text" 
                     name="q"
                     placeholder="Where are you going? (e.g. Kyoto, Oaxaca, Lisbon)"
-                    class="w-full py-3 pl-10 pr-4 outline-none rounded-l-lg bg-transparent text-textdark font-medium"
+                    class="w-full py-3 pl-4 pr-4 outline-none rounded-l-lg bg-transparent text-textdark font-medium"
                 >
             </div>
             <button type="submit" class="bg-primary hover:bg-primaryHover text-white font-bold py-3 px-8 w-full md:w-auto rounded-md transition duration-300 mt-2 md:mt-0 shadow-md hover:-translate-y-0.5">
@@ -38,7 +37,7 @@
         <div>
             <h2 class="text-4xl md:text-5xl mb-6 font-serif font-bold text-white">We believe every place has a story.</h2>
             <p class="text-accent text-lg mb-8 opacity-90 leading-relaxed font-medium">
-                Mainstream platforms sell you packaged tours and crowded landmarks. We connect you directly with the people who make a city breathe â€” the street food vendors, the underground musicians, and the hidden historians.
+                Mainstream platforms sell you packaged tours and crowded landmarks. We connect you directly with the people who make a city breathe - the street food vendors, the underground musicians, and the hidden historians.
             </p>
             <ul class="space-y-4 text-white font-medium">
                 <li class="flex items-center gap-3"><span class="text-primary font-bold text-xl">&check;</span> 100% Locally-led experiences</li>
