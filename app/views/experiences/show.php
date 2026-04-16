@@ -12,11 +12,11 @@ $exp = [
     'price' => $data['experience']->price ?? 85,
     'currency' => '₹', // Changed to INR
     'images' => [
-        (isset($data['experience']->image_url) && !empty($data['experience']->image_url)) ? (strpos($data['experience']->image_url, 'http') === 0 ? $data['experience']->image_url : URLROOT . '/images/' . $data['experience']->image_url) : 'https://dummyimage.com/1200x800/ccc/000.jpg&text=Wander+Local',
-        'https://dummyimage.com/600x400/ccc/000.jpg&text=Gallery+1',
-        'https://dummyimage.com/600x400/ccc/000.jpg&text=Gallery+2',
-        'https://dummyimage.com/600x400/ccc/000.jpg&text=Gallery+3',
-        'https://dummyimage.com/600x400/ccc/000.jpg&text=Gallery+4'
+        (isset($data['experience']->image_url) && !empty($data['experience']->image_url)) ? (strpos($data['experience']->image_url, 'http') === 0 ? $data['experience']->image_url : URLROOT . '/images/' . $data['experience']->image_url) : 'https://images.unsplash.com/photo-1549040003-88220f188fa6?auto=format&fit=crop&q=80&w=1200&h=800',
+        'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&q=80&w=600&h=400',
+        'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=600&h=400',
+        'https://images.unsplash.com/photo-1510422119106-930467a840e5?auto=format&fit=crop&q=80&w=600&h=400',
+        'https://images.unsplash.com/photo-1513622470522-26c3c8a854bc?auto=format&fit=crop&q=80&w=600&h=400'
     ],
     'host' => [
         'name' => $data['experience']->host_name ?? 'Elena Rossi',
