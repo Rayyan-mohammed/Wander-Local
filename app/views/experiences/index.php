@@ -86,13 +86,10 @@
                     <div>
                         <h3 class="font-bold mb-4 text-secondary text-lg flex justify-between">
                             <span>Max Price</span>
-                            <span class="text-primary" id="priceDisplay">$<?= $data['filters']['maxPrice'] ?></span>
+                            <span class="text-primary" id="priceDisplay">₹<?= $data['filters']['maxPrice'] ?></span>
                         </h3>
-                        <input type="range" name="maxPrice" min="10" max="500" step="10" value="<?= $data['filters']['maxPrice'] ?>" 
-                            oninput="document.getElementById('priceDisplay').innerText = '$' + this.value" 
-                            onchange="document.getElementById('sidebarForm').submit()"
-                            class="w-full accent-primary h-2 bg-accent rounded-lg appearance-none cursor-pointer"
-                        >
+                        <input type="range" name="maxPrice" min="10" max="500" step="10" value="<?= $data['filters']['maxPrice'] ?>"
+                            oninput="document.getElementById('priceDisplay').innerText = '₹' + this.value"
                     </div>
 
                     <!-- Duration -->
@@ -211,7 +208,7 @@
                                         <span class="text-sm font-bold text-secondary">by <?= htmlspecialchars($exp->host) ?></span>
                                     </div>
                                     <div class="text-right">
-                                        <span class="font-extrabold text-xl text-primary">$<?= htmlspecialchars($exp->price) ?></span>
+                                        <span class="font-extrabold text-xl text-primary">₹<?= htmlspecialchars($exp->price) ?></span>
                                         <span class="text-xs text-gray-500 font-bold block uppercase tracking-wide">/ person</span>
                                     </div>
                                 </div>

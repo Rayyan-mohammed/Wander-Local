@@ -1,4 +1,4 @@
-<?php require_once '../app/views/components/header.php'; ?>
+﻿<?php require_once '../app/views/components/header.php'; ?>
 
 <!-- 1. Hero Section -->
 <section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-accent via-bgwarm to-[#CBD5C0]">
@@ -17,7 +17,7 @@
         <!-- Search Bar -->
         <form action="<?= URLROOT ?>/experiences" method="GET" class="flex flex-col md:flex-row items-center bg-white p-2 rounded-lg shadow-xl shadow-secondary/10 max-w-3xl mx-auto border border-accent/50">
             <div class="flex-1 w-full relative">
-                <span class="absolute left-4 top-3.5 text-gray-400">📍</span>
+                <span class="absolute left-4 top-3.5 text-gray-400">ðŸ“</span>
                 <input 
                     type="text" 
                     name="q"
@@ -38,7 +38,7 @@
         <div>
             <h2 class="text-4xl md:text-5xl mb-6 font-serif font-bold text-white">We believe every place has a story.</h2>
             <p class="text-accent text-lg mb-8 opacity-90 leading-relaxed font-medium">
-                Mainstream platforms sell you packaged tours and crowded landmarks. We connect you directly with the people who make a city breathe — the street food vendors, the underground musicians, and the hidden historians.
+                Mainstream platforms sell you packaged tours and crowded landmarks. We connect you directly with the people who make a city breathe â€” the street food vendors, the underground musicians, and the hidden historians.
             </p>
             <ul class="space-y-4 text-white font-medium">
                 <li class="flex items-center gap-3"><span class="text-primary font-bold text-xl">&check;</span> 100% Locally-led experiences</li>
@@ -48,7 +48,7 @@
         </div>
         <div class="relative">
             <div class="aspect-[4/5] bg-gray-800 rounded-xl overflow-hidden shadow-2xl relative z-10 border-4 border-white/10">
-                <img src="https://images.unsplash.com/photo-1528181304800-259b08848526?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Local crafting" class="object-cover w-full h-full" />
+                <img src="https://placehold.co/800x800.png" alt="Local crafting" class="object-cover w-full h-full" />
             </div>
             <div class="absolute -bottom-8 -left-8 w-48 h-48 bg-primary rounded-full mix-blend-multiply filter blur-2xl opacity-50"></div>
         </div>
@@ -128,7 +128,7 @@
         
         <div class="bg-white rounded-xl p-8 shadow-sm border border-accent/40 text-center hover:shadow-lg transition duration-300 hover:-translate-y-1">
             <div class="relative inline-block mb-4">
-                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80" alt="Maria Rossi" class="w-24 h-24 rounded-full object-cover border-4 border-bgwarm" />
+                <img src="https://placehold.co/800x800.png" alt="Maria Rossi" class="w-24 h-24 rounded-full object-cover border-4 border-bgwarm" />
                 <div class="absolute bottom-0 right-0 bg-[#3b82f6] text-white rounded-full p-1 border-2 border-white" title="Verified Host">
                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
                 </div>
@@ -143,7 +143,7 @@
 
         <div class="bg-white rounded-xl p-8 shadow-sm border border-accent/40 text-center hover:shadow-lg transition duration-300 hover:-translate-y-1">
             <div class="relative inline-block mb-4">
-                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80" alt="Omar Farooq" class="w-24 h-24 rounded-full object-cover border-4 border-bgwarm" />
+                <img src="https://placehold.co/800x800.png" alt="Omar Farooq" class="w-24 h-24 rounded-full object-cover border-4 border-bgwarm" />
                 <div class="absolute bottom-0 right-0 bg-[#3b82f6] text-white rounded-full p-1 border-2 border-white" title="Verified Host">
                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
                 </div>
@@ -158,7 +158,7 @@
 
         <div class="bg-white rounded-xl p-8 shadow-sm border border-accent/40 text-center hover:shadow-lg transition duration-300 hover:-translate-y-1">
             <div class="relative inline-block mb-4">
-                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80" alt="Yuki Tanaka" class="w-24 h-24 rounded-full object-cover border-4 border-bgwarm" />
+                <img src="https://placehold.co/800x800.png" alt="Yuki Tanaka" class="w-24 h-24 rounded-full object-cover border-4 border-bgwarm" />
                 <div class="absolute bottom-0 right-0 bg-[#3b82f6] text-white rounded-full p-1 border-2 border-white" title="Verified Host">
                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
                 </div>
