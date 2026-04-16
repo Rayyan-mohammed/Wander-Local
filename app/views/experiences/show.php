@@ -12,15 +12,15 @@ $exp = [
     'price' => $data['experience']->price ?? 85,
     'currency' => '₹', // Changed to INR
     'images' => [
-        (isset($data['experience']->image_url) && !empty($data['experience']->image_url)) ? (strpos($data['experience']->image_url, 'http') === 0 ? $data['experience']->image_url : URLROOT . '/images/' . $data['experience']->image_url) : 'https://images.unsplash.com/photo-1549040003-88220f188fa6?auto=format&fit=crop&q=80&w=1200&h=800',
-        'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&q=80&w=600&h=400',
-        'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=600&h=400',
-        'https://images.unsplash.com/photo-1510422119106-930467a840e5?auto=format&fit=crop&q=80&w=600&h=400',
-        'https://images.unsplash.com/photo-1513622470522-26c3c8a854bc?auto=format&fit=crop&q=80&w=600&h=400'
+        (isset($data['experience']->image_url) && !empty($data['experience']->image_url)) ? (strpos($data['experience']->image_url, 'http') === 0 ? $data['experience']->image_url : URLROOT . '/images/' . $data['experience']->image_url) : 'https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=1200',
+        'https://images.pexels.com/photos/1482803/pexels-photo-1482803.jpeg?auto=compress&cs=tinysrgb&w=600',
+        'https://images.pexels.com/photos/884450/pexels-photo-884450.jpeg?auto=compress&cs=tinysrgb&w=600',
+        'https://images.pexels.com/photos/1234535/pexels-photo-1234535.jpeg?auto=compress&cs=tinysrgb&w=600',
+        'https://images.pexels.com/photos/691114/pexels-photo-691114.jpeg?auto=compress&cs=tinysrgb&w=600'
     ],
     'host' => [
         'name' => $data['experience']->host_name ?? 'Elena Rossi',
-        'avatar' => isset($data['experience']->avatar_url) ? URLROOT . '/images/' . $data['experience']->avatar_url : 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=200',
+        'avatar' => isset($data['experience']->avatar_url) ? URLROOT . '/images/' . $data['experience']->avatar_url : 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=200',
         'verified' => $data['experience']->is_verified ?? true,
         'responseRate' => '100%',
         'responseTime' => 'within an hour',
@@ -47,9 +47,9 @@ $exp = [
         ]
     ],
     'similar' => [
-        ['id' => 'sim-1', 'title' => 'Tuscan Truffle Hunting & Lunch', 'image' => 'https://images.unsplash.com/photo-1542382103399-52e85eb66228?auto=format&fit=crop&q=80&w=400', 'price' => 120, 'rating' => 4.9, 'location' => 'San Miniato'],
-        ['id' => 'sim-2', 'title' => 'Gelato Masterclass in Rome', 'image' => 'https://images.unsplash.com/photo-1579954115545-a95591f28b48?auto=format&fit=crop&q=80&w=400', 'price' => 65, 'rating' => 4.8, 'location' => 'Rome'],
-        ['id' => 'sim-3', 'title' => 'Street Food Tour by Vintage Vespa', 'image' => 'https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&q=80&w=400', 'price' => 95, 'rating' => 5.0, 'location' => 'Florence']
+        ['id' => 'sim-1', 'title' => 'Tuscan Truffle Hunting & Lunch', 'image' => 'https://images.pexels.com/photos/1109197/pexels-photo-1109197.jpeg?auto=compress&cs=tinysrgb&w=400', 'price' => 120, 'rating' => 4.9, 'location' => 'San Miniato'],
+        ['id' => 'sim-2', 'title' => 'Gelato Masterclass in Rome', 'image' => 'https://images.pexels.com/photos/1362534/pexels-photo-1362534.jpeg?auto=compress&cs=tinysrgb&w=400', 'price' => 65, 'rating' => 4.8, 'location' => 'Rome'],
+        ['id' => 'sim-3', 'title' => 'Street Food Tour by Vintage Vespa', 'image' => 'https://images.pexels.com/photos/1199960/pexels-photo-1199960.jpeg?auto=compress&cs=tinysrgb&w=400', 'price' => 95, 'rating' => 5.0, 'location' => 'Florence']
     ]
 ];
 ?>
