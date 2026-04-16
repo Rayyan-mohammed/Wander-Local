@@ -229,27 +229,3 @@
 </div>
 
 <?php require_once '../app/views/components/footer.php'; ?>
-                                            <img src="<?= htmlspecialchars($exp->hostAvatar) ?>" alt="<?= htmlspecialchars($exp->host) ?>" class="w-9 h-9 rounded-full border-2 border-white shadow-sm object-cover" />
-                                            <?php if($exp->verified): ?>
-                                                <div class="absolute -bottom-1 -right-1 bg-blue-500 rounded-full p-0.5 border-2 border-white" title="Verified Host">
-                                                    <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-                                                </div>
-                                            <?php endif; ?>
-                                        </div>
-                                        <span class="text-sm font-bold text-secondary">by <?= htmlspecialchars($exp->host) ?></span>
-                                    </div>
-                                    <div class="text-right">
-                                        <span class="font-extrabold text-xl text-primary">₹<?= htmlspecialchars($exp->price) ?></span>
-                                        <span class="text-xs text-gray-500 font-bold block uppercase tracking-wide">/ person</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
-        </main>
-    </div>
-</div>
-
-<?php require_once '../app/views/components/footer.php'; ?>
