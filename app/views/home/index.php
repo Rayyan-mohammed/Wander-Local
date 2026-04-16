@@ -48,7 +48,7 @@
         </div>
         <div class="relative">
             <div class="aspect-[4/5] bg-gray-800 rounded-xl overflow-hidden shadow-2xl relative z-10 border-4 border-white/10">
-                <img src="https://images.unsplash.com/photo-1512101176959-c557f3516787?auto=format&fit=crop&q=80&w=800&h=1000" alt="Local crafting" class="object-cover w-full h-full" />
+                <img src="https://images.pexels.com/photos/6207365/pexels-photo-6207365.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Local crafting" class="object-cover w-full h-full" />
             </div>
             <div class="absolute -bottom-8 -left-8 w-48 h-48 bg-primary rounded-full mix-blend-multiply filter blur-2xl opacity-50"></div>
         </div>
