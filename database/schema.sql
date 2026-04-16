@@ -163,9 +163,16 @@ CREATE TABLE `password_resets` (
 -- Indexes for performance
 CREATE INDEX idx_exp_host ON experiences(host_id);
 CREATE INDEX idx_exp_city_country ON experiences(city, country);
+CREATE INDEX idx_exp_status ON experiences(status);
+CREATE INDEX idx_exp_duration_hours ON experiences(duration_hours);
 CREATE INDEX idx_bookings_traveler ON bookings(traveler_id);
 CREATE INDEX idx_bookings_date ON bookings(booking_date);
+CREATE INDEX idx_bookings_status ON bookings(status);
+CREATE INDEX idx_bookings_created_at ON bookings(created_at);
 CREATE INDEX idx_blog_slug ON blog_posts(slug);
+CREATE INDEX idx_blog_author ON blog_posts(author_id);
+CREATE INDEX idx_blog_status ON blog_posts(status);
+CREATE INDEX idx_reviews_reviewer ON reviews(reviewer_id);
 
 -- INSERT SEED DATA
 

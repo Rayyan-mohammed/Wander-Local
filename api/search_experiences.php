@@ -2,8 +2,16 @@
 // api/search_experiences.php
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../app/core/Logger.php';
 
 header('Content-Type: application/json');
+
+if (isLoggedIn()) {
+    header('Cache-Control: private, no-store, no-cache, must-revalidate');
+    header('Pragma: no-cache');
+} else {
+    header('Cache-Control: public, max-age=300');
+}
 
 // --- 1. SANITIZATION & VALIDATION ---
 $city = isset($_GET['city']) ? trim($_GET['city']) : '';
@@ -156,6 +164,6 @@ try {
     ]);
 
 } catch (PDOException $e) {
-    error_log('search_experiences.php: ' . $e->getMessage());
+    Logger::error('search_experiences.php failed', ['exception' => $e->getMessage()]);
     echo json_encode(['success' => false, 'message' => 'Database error']);
 }

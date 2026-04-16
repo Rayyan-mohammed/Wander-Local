@@ -1,5 +1,6 @@
 <?php
 require_once '../app/config/config.php';
+require_once __DIR__ . '/Logger.php';
 
 class Database {
     private $host = DB_HOST;
@@ -22,7 +23,7 @@ class Database {
             $this->dbh = new PDO($dsn, $this->user, $this->pass, $options);
         } catch(PDOException $e) {
             $this->error = $e->getMessage();
-            error_log('app/core/Database.php: ' . $this->error);
+            Logger::error('Database connection failed in app/core/Database.php', ['exception' => $this->error]);
             if (defined('APP_ENV') && APP_ENV === 'development') {
                 die('Database connection failed: ' . $this->error);
             }

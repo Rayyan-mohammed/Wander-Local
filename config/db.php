@@ -1,6 +1,7 @@
 <?php
 // config/db.php
 require_once 'config.php';
+require_once __DIR__ . '/../app/core/Logger.php';
 
 try {
     $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4";
@@ -11,7 +12,7 @@ try {
     ];
     $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
 } catch (\PDOException $e) {
-    error_log('config/db.php: ' . $e->getMessage());
+    Logger::error('Database connection failed in config/db.php', ['exception' => $e->getMessage()]);
     if (defined('APP_ENV') && APP_ENV === 'development') {
         die("Database connection failed: " . $e->getMessage());
     }

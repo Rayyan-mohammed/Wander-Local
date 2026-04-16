@@ -6,6 +6,53 @@ class ExperiencesController extends Controller {
         $this->experienceModel = $this->model('Experience');
     }
 
+    private function isDevelopment() {
+        return defined('APP_ENV') && APP_ENV === 'development';
+    }
+
+    private function normalizeExperienceForListing($exp) {
+        $location = trim((string)($exp->location ?? ''));
+        if ($location === '') {
+            $city = trim((string)($exp->city ?? ''));
+            $country = trim((string)($exp->country ?? ''));
+            $location = trim($city . ($country !== '' ? ', ' . $country : ''));
+        }
+
+        return (object) [
+            'id' => (int)($exp->id ?? 0),
+            'title' => (string)($exp->title ?? ''),
+            'host' => (string)($exp->host_name ?? 'Local Host'),
+            'hostAvatar' => !empty($exp->avatar_url)
+                ? (string)$exp->avatar_url
+                : 'https://ui-avatars.com/api/?name=' . urlencode((string)($exp->host_name ?? 'Host')),
+            'verified' => (bool)($exp->is_verified ?? false),
+            'location' => $location,
+            'category' => (string)($exp->category ?? 'Experience'),
+            'duration' => (string)($exp->duration ?? 'Half-day'),
+            'price' => (float)($exp->price ?? 0),
+            'rating' => (float)($exp->avg_rating ?? 0),
+            'reviews' => (int)($exp->total_bookings ?? 0),
+            'image' => !empty($exp->image_url)
+                ? (string)$exp->image_url
+                : 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=600&h=400'
+        ];
+    }
+
+    private function getBaseExperiences() {
+        $dbExperiences = $this->experienceModel->getExperiences();
+        if (!empty($dbExperiences)) {
+            return array_map(function ($exp) {
+                return $this->normalizeExperienceForListing($exp);
+            }, $dbExperiences);
+        }
+
+        if ($this->isDevelopment()) {
+            return $this->getMockExperiences();
+        }
+
+        return [];
+    }
+
     private function getMockExperiences() {
         return [
             (object)["id" => 1, "title" => "Secret Ramen Alleys", "host" => "Kenji", "hostAvatar" => "https://i.pravatar.cc/150?u=kenji", "verified" => true, "location" => "Tokyo, Japan", "category" => "Food", "duration" => "Half-day", "price" => 45, "rating" => 4.9, "reviews" => 124, "image" => "https://images.pexels.com/photos/1907246/pexels-photo-1907246.jpeg?auto=compress&cs=tinysrgb&w=600"],
@@ -45,19 +92,13 @@ class ExperiencesController extends Controller {
     }
 
     public function index() {
-        // --- MOCK DATA ---
-        $cities = [
-            "Tokyo, Japan", "Kyoto, Japan", "Osaka, Japan", "Paris, France", 
-            "Rome, Italy", "Milan, Italy", "New York, USA", "Oaxaca, Mexico", 
-            "Mexico City, Mexico", "Lisbon, Portugal", "Porto, Portugal", "London, UK", 
-            "Barcelona, Spain", "Madrid, Spain", "Berlin, Germany", "Munich, Germany", 
-            "Vienna, Austria", "Athens, Greece", "Istanbul, Turkey", "Marrakech, Morocco"
-        ];
+        $baseExperiences = $this->getBaseExperiences();
+        $cities = array_values(array_unique(array_map(function($exp) {
+            return $exp->location;
+        }, $baseExperiences)));
 
         $categories = ["Food", "Workshop", "Nature", "Art", "History", "Nightlife", "Adventure"];
         $durations = ["Half-day", "Full-day", "Multi-day"];
-
-        $mock_experiences = $this->getMockExperiences();
 
         // Get filters
         $q = isset($_GET['q']) ? $_GET['q'] : '';
@@ -68,7 +109,7 @@ class ExperiencesController extends Controller {
         $sort = isset($_GET['sort']) ? $_GET['sort'] : 'recommended';
 
         // Filter the experiences
-        $filtered_experiences = array_filter($mock_experiences, function($exp) use ($q, $category, $duration, $minRating, $maxPrice) {
+        $filtered_experiences = array_filter($baseExperiences, function($exp) use ($q, $category, $duration, $minRating, $maxPrice) {
             $matchQuery = empty($q) || stripos($exp->location, $q) !== false || stripos($exp->title, $q) !== false;
             $matchCat = empty($category) || $exp->category === $category;
             $matchDur = empty($duration) || $exp->duration === $duration;
@@ -109,18 +150,18 @@ class ExperiencesController extends Controller {
     public function show($id) {
         $experience = $this->experienceModel->getExperienceById($id);
 
-        if(!$experience) {
+        if(!$experience && $this->isDevelopment()) {
             foreach($this->getMockExperiences() as $mockExperience) {
                 if((int)$mockExperience->id === (int)$id) {
                     $experience = $this->mapMockExperienceToDetail($mockExperience);
                     break;
                 }
             }
+        }
 
-            if(!$experience) {
-                header('Location: ' . URLROOT . '/experiences');
-                exit;
-            }
+        if(!$experience) {
+            header('Location: ' . URLROOT . '/experiences');
+            exit;
         }
 
         $data = [
