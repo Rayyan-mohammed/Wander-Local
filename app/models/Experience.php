@@ -7,13 +7,13 @@ class Experience {
     }
 
     public function getExperiences() {
-        $this->db->query("SELECT experiences.*, users.name as host_name, users.avatar_url FROM experiences INNER JOIN users ON experiences.host_id = users.id ORDER BY experiences.created_at DESC");
+        $this->db->query("SELECT experiences.*, users.name as host_name, users.avatar as avatar_url FROM experiences INNER JOIN users ON experiences.host_id = users.id ORDER BY experiences.created_at DESC");
         
         return $this->db->resultSet();
     }
 
     public function getExperienceById($id) {
-        $this->db->query("SELECT experiences.*, users.name as host_name, users.bio as host_bio, users.languages as host_languages, users.is_verified, users.avatar_url FROM experiences INNER JOIN users ON experiences.host_id = users.id WHERE experiences.id = :id");
+        $this->db->query("SELECT experiences.*, users.name as host_name, users.bio as host_bio, users.languages as host_languages, users.is_verified, users.avatar as avatar_url FROM experiences INNER JOIN users ON experiences.host_id = users.id WHERE experiences.id = :id");
         $this->db->bind(':id', $id);
 
         return $this->db->single();
