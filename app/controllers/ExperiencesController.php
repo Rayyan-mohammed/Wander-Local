@@ -87,14 +87,25 @@ class ExperiencesController extends Controller {
     public function show($id) {
         $experience = $this->experienceModel->getExperienceById($id);
 
-        if($experience) {
-            $data = [
-                'experience' => $experience
+        // Fallback for mock experiences that aren't in the database yet
+        if(!$experience) {
+            $experience = clone (object)[
+                'id' => $id,
+                'title' => 'Wander Local Experience ' . $id,
+                'category' => 'Culture',
+                'location' => 'Worldwide',
+                'duration' => 'Flexible',
+                'price' => 75,
+                'host_name' => 'Local Host',
+                'description' => 'A unique and memorable local experience for ID ' . $id . '.',
+                'is_verified' => true
             ];
-            $this->view('experiences/show', $data);
-        } else {
-            die('Experience not found');
         }
+
+        $data = [
+            'experience' => $experience
+        ];
+        $this->view('experiences/show', $data);
     }
 
     public function create() {
