@@ -20,10 +20,12 @@ class AuthController extends Controller {
         ];
 
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+            $_POST = array_map(function ($value) {
+                return is_string($value) ? trim($value) : $value;
+            }, $_POST);
 
-            $data['email'] = trim($_POST['email']);
-            $data['password'] = trim($_POST['password']);
+            $data['email'] = $_POST['email'] ?? '';
+            $data['password'] = $_POST['password'] ?? '';
 
             if (empty($data['email'])) $data['email_err'] = 'Please enter email';
             if (empty($data['password'])) $data['password_err'] = 'Please enter password';
@@ -57,12 +59,14 @@ class AuthController extends Controller {
         ];
 
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+            $_POST = array_map(function ($value) {
+                return is_string($value) ? trim($value) : $value;
+            }, $_POST);
             
-            $data['name'] = trim($_POST['name']);
-            $data['email'] = trim($_POST['email']);
-            $data['password'] = trim($_POST['password']);
-            $data['role'] = trim($_POST['role']); // 'traveler' or 'host'
+            $data['name'] = $_POST['name'] ?? '';
+            $data['email'] = $_POST['email'] ?? '';
+            $data['password'] = $_POST['password'] ?? '';
+            $data['role'] = $_POST['role'] ?? 'traveler'; // 'traveler' or 'host'
 
             // basic validation
             if(empty($data['name'])) $data['name_err'] = 'Please enter name';
@@ -77,7 +81,7 @@ class AuthController extends Controller {
 
             if(empty($data['name_err']) && empty($data['email_err']) && empty($data['password_err'])) {
                 // hash possword
-                $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+                $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
                 
                 if($this->userModel->register($data)) {
                     header('Location: ' . URLROOT . '/auth/login');
@@ -93,6 +97,7 @@ class AuthController extends Controller {
     }
 
     public function createUserSession($user) {
+        session_regenerate_id(true);
         $_SESSION['user_id'] = $user->id;
         $_SESSION['user_email'] = $user->email;
         $_SESSION['user_name'] = $user->name;

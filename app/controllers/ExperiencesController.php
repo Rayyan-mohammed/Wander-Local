@@ -137,16 +137,18 @@ class ExperiencesController extends Controller {
 
         if($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Sanitize
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+            $_POST = array_map(function ($value) {
+                return is_string($value) ? trim($value) : $value;
+            }, $_POST);
 
             $data = [
                 'host_id' => trim($_SESSION['user_id']),
-                'title' => trim($_POST['title']),
-                'description' => trim($_POST['description']),
-                'price' => trim($_POST['price']),
-                'duration' => trim($_POST['duration']),
-                'category' => trim($_POST['category']),
-                'location' => trim($_POST['location']),
+                'title' => $_POST['title'] ?? '',
+                'description' => $_POST['description'] ?? '',
+                'price' => $_POST['price'] ?? '',
+                'duration' => $_POST['duration'] ?? '',
+                'category' => $_POST['category'] ?? '',
+                'location' => $_POST['location'] ?? '',
                 'image_url' => '', // placeholder
                 
                 'title_err' => '',

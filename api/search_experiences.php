@@ -156,5 +156,6 @@ try {
     ]);
 
 } catch (PDOException $e) {
-    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    error_log('search_experiences.php: ' . $e->getMessage());
+    echo json_encode(['success' => false, 'message' => 'Database error']);
 }

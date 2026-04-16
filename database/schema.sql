@@ -114,6 +114,7 @@ CREATE TABLE `blog_posts` (
   `read_time_mins` INT DEFAULT 5,
   `views` INT DEFAULT 0,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT NULL,
   FOREIGN KEY (`author_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
 );
 

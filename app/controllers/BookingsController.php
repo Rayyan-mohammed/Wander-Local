@@ -13,13 +13,15 @@ class BookingsController extends Controller {
         }
 
         if($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+            $_POST = array_map(function ($value) {
+                return is_string($value) ? trim($value) : $value;
+            }, $_POST);
 
             $data = [
-                'experience_id' => trim($_POST['experience_id']),
+                'experience_id' => $_POST['experience_id'] ?? '',
                 'traveler_id' => trim($_SESSION['user_id']),
-                'booking_date' => trim($_POST['booking_date']),
-                'message' => trim($_POST['message'])
+                'booking_date' => $_POST['booking_date'] ?? '',
+                'message' => $_POST['message'] ?? ''
             ];
 
             if($this->bookingModel->createBooking($data)) {

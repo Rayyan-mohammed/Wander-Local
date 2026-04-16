@@ -18,6 +18,14 @@ if (!isLoggedIn()) {
     exit;
 }
 
+$rateAction = 'api_create_booking';
+if (!check_rate_limit($rateAction, 20, 3600)) {
+    http_response_code(429);
+    echo json_encode(['success' => false, 'message' => 'Too many requests. Please try again later.']);
+    exit;
+}
+increment_rate_limit($rateAction);
+
 // Get POST data
 $input = json_decode(file_get_contents('php://input'), true);
 

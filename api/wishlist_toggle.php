@@ -16,6 +16,14 @@ if (!isLoggedIn()) {
     exit;
 }
 
+$rateAction = 'api_wishlist_toggle';
+if (!check_rate_limit($rateAction, 120, 3600)) {
+    http_response_code(429);
+    echo json_encode(['success' => false, 'message' => 'Too many requests. Please try again later.']);
+    exit;
+}
+increment_rate_limit($rateAction);
+
 $data = json_decode(file_get_contents('php://input'), true);
 $csrfToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? (is_array($data) ? ($data['csrf_token'] ?? '') : '');
 if (!verify_csrf_token($csrfToken)) {

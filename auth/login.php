@@ -43,13 +43,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($error)) {
             
             if ($user && password_verify($password, $user['password_hash'])) {
                 // Success
+                session_regenerate_id(true);
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_role'] = $user['role'];
                 $_SESSION['login_attempts'] = 0;
                 
                 if (!empty($_POST['remember'])) {
-                    // Set remember me cookie (simplified)
-                    setcookie('remember_me', $user['id'], time() + (30 * 24 * 60 * 60), '/'); // 30 days
+                    // Keep compatibility cookie but apply secure flags.
+                    setcookie('remember_me', (string)$user['id'], [
+                        'expires' => time() + (30 * 24 * 60 * 60),
+                        'path' => '/',
+                        'secure' => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
+                        'httponly' => true,
+                        'samesite' => 'Lax'
+                    ]);
                 }
                 
                 flash('success', "Welcome back, " . htmlspecialchars($user['name']) . "!");

@@ -18,6 +18,14 @@ if (!isLoggedIn()) {
     exit;
 }
 
+$rateAction = 'api_send_message';
+if (!check_rate_limit($rateAction, 30, 3600)) {
+    http_response_code(429);
+    echo json_encode(['success' => false, 'message' => 'Too many requests. Please try again later.']);
+    exit;
+}
+increment_rate_limit($rateAction);
+
 $input = json_decode(file_get_contents('php://input'), true);
 
 $csrfToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? (is_array($input) ? ($input['csrf_token'] ?? '') : '');

@@ -11,6 +11,9 @@ try {
     ];
     $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
 } catch (\PDOException $e) {
-    // In production, log this error instead of showing it
-    die("Database connection failed: " . $e->getMessage());
+    error_log('config/db.php: ' . $e->getMessage());
+    if (defined('APP_ENV') && APP_ENV === 'development') {
+        die("Database connection failed: " . $e->getMessage());
+    }
+    die('Service temporarily unavailable.');
 }

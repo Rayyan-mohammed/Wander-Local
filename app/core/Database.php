@@ -22,7 +22,11 @@ class Database {
             $this->dbh = new PDO($dsn, $this->user, $this->pass, $options);
         } catch(PDOException $e) {
             $this->error = $e->getMessage();
-            echo $this->error;
+            error_log('app/core/Database.php: ' . $this->error);
+            if (defined('APP_ENV') && APP_ENV === 'development') {
+                die('Database connection failed: ' . $this->error);
+            }
+            die('Service temporarily unavailable.');
         }
     }
 

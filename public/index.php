@@ -5,8 +5,5 @@ require_once '../app/core/Database.php';
 require_once '../app/core/Controller.php';
 require_once '../app/core/App.php';
 
-// Start Session
-session_start();
-
 // Initialize the core application class
 $app = new App();

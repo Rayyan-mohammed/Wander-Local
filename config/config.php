@@ -12,14 +12,19 @@ if (APP_ENV === 'development') {
     ini_set('display_startup_errors', 0);
     error_reporting(0);
 }
-// End config additions
-session_start(); // Automatically start session globally
+
+if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.cookie_httponly', '1');
+    ini_set('session.use_only_cookies', '1');
+    ini_set('session.cookie_samesite', 'Lax');
+    ini_set('session.cookie_secure', APP_ENV === 'production' ? '1' : '0');
+    session_start();
+}
 
 // ------------------------------------------------------------------------
 // SITE CONSTANTS
 // ------------------------------------------------------------------------
 define('SITE_NAME', 'Wander Local');
-define('BASE_URL', 'http://localhost/Wander_Local');
 define('UPLOAD_PATH', __DIR__ . '/../uploads/');
 define('MAX_FILE_SIZE', 5 * 1024 * 1024); // 5MB
 
