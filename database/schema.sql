@@ -39,12 +39,15 @@ CREATE TABLE `experiences` (
   `category` VARCHAR(100) NOT NULL,
   `price` DECIMAL(10,2) NOT NULL,
   `duration` VARCHAR(100) NOT NULL,
+  `duration_hours` DECIMAL(5,2) DEFAULT NULL,
   `max_guests` INT DEFAULT 10,
   `languages` VARCHAR(255) DEFAULT 'English',
+  `city` VARCHAR(100) DEFAULT NULL,
   `location` VARCHAR(100) NOT NULL,
   `country` VARCHAR(100) DEFAULT 'Unknown',
   `meeting_point` VARCHAR(255) DEFAULT '',
   `image_url` VARCHAR(255) DEFAULT NULL,
+  `cover_image` VARCHAR(255) DEFAULT NULL,
   `status` ENUM('draft', 'active', 'paused') NOT NULL DEFAULT 'draft',
   `avg_rating` DECIMAL(3,2) DEFAULT 0.00,
   `total_bookings` INT DEFAULT 0,
@@ -147,6 +150,15 @@ CREATE TABLE `wishlists` (
   UNIQUE(`user_id`, `experience_id`)
 );
 
+CREATE TABLE `password_resets` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT NOT NULL,
+  `token` VARCHAR(255) NOT NULL UNIQUE,
+  `expires_at` DATETIME NOT NULL,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+);
+
 -- Indexes for performance
 CREATE INDEX idx_exp_host ON experiences(host_id);
 CREATE INDEX idx_exp_city_country ON experiences(city, country);
@@ -165,9 +177,9 @@ INSERT INTO `host_profiles` (`user_id`, `city`, `country`, `speciality_tags`) VA
 (1, 'Florence', 'Italy', 'Culinary, Wine'),
 (2, 'Kyoto', 'Japan', 'Culture, History');
 
-INSERT INTO `experiences` (`id`, `host_id`, `title`, `slug`, `description`, `category`, `price`, `duration_hours`, `max_guests`, `languages`, `city`, `country`, `meeting_point`, `status`) VALUES
-(1, 1, 'Authentic Tuscan Pasta Making', 'authentic-tuscan-pasta-making', 'Learn the secrets of perfect handmade pasta.', 'Culinary', 85.00, 3.0, 6, 'English, Italian', 'Florence', 'Italy', 'Piazza del Carmine 14', 'active'),
-(2, 2, 'Hidden Temples of Kyoto', 'hidden-temples-of-kyoto', 'Explore the secret zen gardens and temples of ancient Kyoto.', 'Culture', 65.00, 4.0, 8, 'English, Japanese', 'Kyoto', 'Japan', 'Kyoto Station Central Gate', 'active');
+INSERT INTO `experiences` (`id`, `host_id`, `title`, `slug`, `description`, `category`, `price`, `duration`, `duration_hours`, `max_guests`, `languages`, `city`, `location`, `country`, `meeting_point`, `status`) VALUES
+(1, 1, 'Authentic Tuscan Pasta Making', 'authentic-tuscan-pasta-making', 'Learn the secrets of perfect handmade pasta.', 'Culinary', 85.00, 'Half-day', 3.0, 6, 'English, Italian', 'Florence', 'Florence', 'Italy', 'Piazza del Carmine 14', 'active'),
+(2, 2, 'Hidden Temples of Kyoto', 'hidden-temples-of-kyoto', 'Explore the secret zen gardens and temples of ancient Kyoto.', 'Culture', 65.00, 'Full-day', 4.0, 8, 'English, Japanese', 'Kyoto', 'Kyoto', 'Japan', 'Kyoto Station Central Gate', 'active');
 
 INSERT INTO `bookings` (`id`, `experience_id`, `traveler_id`, `booking_date`, `guest_count`, `total_price`, `status`, `booking_ref`) VALUES
 (1, 1, 3, '2026-05-10', 2, 170.00, 'confirmed', 'WL-728193');

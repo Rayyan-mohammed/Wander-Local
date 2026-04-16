@@ -2,6 +2,7 @@
 // api/wishlist_toggle.php
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/security.php';
 
 header('Content-Type: application/json');
 
@@ -16,6 +17,13 @@ if (!isLoggedIn()) {
 }
 
 $data = json_decode(file_get_contents('php://input'), true);
+$csrfToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? (is_array($data) ? ($data['csrf_token'] ?? '') : '');
+if (!verify_csrf_token($csrfToken)) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Invalid CSRF token']);
+    exit;
+}
+
 $exp_id = isset($data['experience_id']) ? (int)$data['experience_id'] : 0;
 $user_id = $_SESSION['user_id'];
 

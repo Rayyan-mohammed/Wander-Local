@@ -635,7 +635,10 @@ document.addEventListener('alpine:init', () => {
             try {
                 const res = await fetch(`<?= BASE_URL ?>/api/wishlist_toggle.php`, {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
                     body: JSON.stringify({experience_id: this.experience.id})
                 });
                 const data = await res.json();
@@ -661,7 +664,10 @@ document.addEventListener('alpine:init', () => {
             try {
                 const res = await fetch(`<?= BASE_URL ?>/api/create_booking.php`, {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
                     body: JSON.stringify({
                         experience_id: this.experience.id,
                         date: this.booking.date,
@@ -688,7 +694,10 @@ document.addEventListener('alpine:init', () => {
             try {
                 const res = await fetch(`<?= BASE_URL ?>/api/send_message.php`, {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
                     body: JSON.stringify({
                         experience_id: this.experience.id,
                         receiver_id: <?= $exp['host_id'] ?>,

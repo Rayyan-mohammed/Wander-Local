@@ -2,18 +2,38 @@
 // api/create_booking.php
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/security.php';
 
 header('Content-Type: application/json');
 
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode(['success' => false, 'message' => 'Invalid request method']);
+    exit;
+}
+
 if (!isLoggedIn()) {
+    http_response_code(401);
     echo json_encode(['success' => false, 'message' => 'You must be logged in to book.']);
     exit;
 }
 
-$user = getCurrentUser();
-
 // Get POST data
 $input = json_decode(file_get_contents('php://input'), true);
+
+$csrfToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? (is_array($input) ? ($input['csrf_token'] ?? '') : '');
+if (!verify_csrf_token($csrfToken)) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Invalid CSRF token']);
+    exit;
+}
+
+$user = getCurrentUser($pdo);
+if (!$user) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+    exit;
+}
 
 if (!$input) {
     echo json_encode(['success' => false, 'message' => 'Invalid Request']);
@@ -79,5 +99,6 @@ try {
         'message' => 'Booking completed successfully'
     ]);
 } catch (PDOException $e) {
-    echo json_encode(['success' => false, 'message' => 'Database Error: ' . $e->getMessage()]);
+    error_log('create_booking.php: ' . $e->getMessage());
+    echo json_encode(['success' => false, 'message' => 'Database error']);
 }

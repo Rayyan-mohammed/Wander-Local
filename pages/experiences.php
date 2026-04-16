@@ -401,7 +401,10 @@ document.addEventListener('alpine:init', () => {
             try {
                 const res = await fetch(`<?= BASE_URL ?>/api/wishlist_toggle.php`, {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
                     body: JSON.stringify({experience_id: exp.id})
                 });
                 const data = await res.json();

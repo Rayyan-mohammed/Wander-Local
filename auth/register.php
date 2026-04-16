@@ -35,8 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($error)) {
                 $user_id = $pdo->lastInsertId();
                 
                 if ($role === 'host') {
-                    $stmt = $pdo->prepare("INSERT INTO host_profiles (user_id) VALUES (?)");
-                    $stmt->execute([$user_id]);
+                    $stmt = $pdo->prepare("INSERT INTO host_profiles (user_id, city, country) VALUES (?, ?, ?)");
+                    $stmt->execute([$user_id, 'Unknown', 'Unknown']);
                 }
                 
                 $_SESSION['user_id'] = $user_id;

@@ -6,14 +6,17 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/security.php';
 
 $currentUser = getCurrentUser($pdo);
+$csrfToken = generate_csrf_token();
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
     <title><?= SITE_NAME ?> | Authentic Local Experiences</title>
     
     <!-- Google Fonts -->

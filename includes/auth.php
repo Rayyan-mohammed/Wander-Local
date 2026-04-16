@@ -53,7 +53,15 @@ function requireRole($role) {
  * Load the current user object directly from the DB
  * returns False if the user isn't logged in, or the current user record.
  */
-function getCurrentUser($pdo) {
+function getCurrentUser($pdo = null) {
+    if ($pdo === null && isset($GLOBALS['pdo'])) {
+        $pdo = $GLOBALS['pdo'];
+    }
+
+    if ($pdo === null) {
+        return false;
+    }
+
     if (isLoggedIn()) {
         $stmt = $pdo->prepare("SELECT id, name, email, role, avatar, bio, nationality FROM users WHERE id = ?");
         $stmt->execute([$_SESSION['user_id']]);
