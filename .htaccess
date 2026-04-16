@@ -1,6 +1,30 @@
 RewriteEngine On
-# Redirect all requests to the public directory
-RewriteRule ^$ public/ [L]
+RewriteBase /Wander_Local/
+
+# Force HTTPS (uncomment in production)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Deny access to .env and config files
+RewriteRule ^config/ - [F,L]
+RewriteRule ^includes/ - [F,L]
+RewriteRule ^\.git/ - [F,L]
+
+# Route front-controller paths for user-friendly URLs
+# Avoid rewriting real folders/files (e.g. assets)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ public/$1 [L]
+
+# Example custom routes matching request to a specific file
+RewriteRule ^login/?$ pages/auth/login.php [L,NC]
+RewriteRule ^register/?$ pages/auth/register.php [L,NC]
+RewriteRule ^logout/?$ pages/auth/logout.php [L,NC]
+RewriteRule ^dashboard/?$ pages/traveler/dashboard.php [L,NC]
+RewriteRule ^host-dashboard/?$ admin/dashboard.php [L,NC]
+
+# Detail pages using SLUG
+RewriteRule ^experience/([a-zA-Z0-9-]+)/?$ pages/experience_detail.php?slug=$1 [L,NC]
+RewriteRule ^blog/([a-zA-Z0-9-]+)/?$ pages/blog_detail.php?slug=$1 [L,NC]
+
+# Generic fallback routing (optional)
+RewriteRule ^([^/]+)/?$ pages/$1.php [L]
