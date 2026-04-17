@@ -21,6 +21,7 @@ class BookingsController extends Controller {
                 'experience_id' => $_POST['experience_id'] ?? '',
                 'traveler_id' => trim($_SESSION['user_id']),
                 'booking_date' => $_POST['booking_date'] ?? '',
+                'guest_count' => $_POST['guest_count'] ?? 1,
                 'message' => $_POST['message'] ?? ''
             ];
 
