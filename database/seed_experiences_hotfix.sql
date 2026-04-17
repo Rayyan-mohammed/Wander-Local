@@ -101,3 +101,56 @@ VALUES
 (5, 2)
 ON DUPLICATE KEY UPDATE
 created_at = created_at;
+
+-- Backfill follower notifications for existing relationships.
+INSERT INTO notifications (recipient_id, actor_id, type, title, message, url, target_id)
+SELECT
+    lf.localist_id,
+    lf.follower_id,
+    'new_follower',
+    'You have a new follower',
+    CONCAT(u.name, ' started following you.'),
+    CONCAT('/pages/host.php?id=', lf.localist_id),
+    lf.follower_id
+FROM localist_follows lf
+INNER JOIN users u ON u.id = lf.follower_id
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM notifications n
+    WHERE n.recipient_id = lf.localist_id
+      AND n.actor_id = lf.follower_id
+      AND n.type = 'new_follower'
+      AND n.target_id = lf.follower_id
+);
+
+-- Backfill one new-post notification per follow pair using latest published post per localist.
+INSERT INTO notifications (recipient_id, actor_id, type, title, message, url, target_id)
+SELECT
+    lf.follower_id,
+    bp.author_id,
+    'new_post',
+    'New story from a localist you follow',
+    CONCAT(au.name, ' published "', LEFT(bp.title, 90), IF(CHAR_LENGTH(bp.title) > 90, '...', ''), '".'),
+    CONCAT('/pages/post.php?slug=', bp.slug),
+    bp.id
+FROM localist_follows lf
+INNER JOIN (
+    SELECT bp1.*
+    FROM blog_posts bp1
+    INNER JOIN (
+        SELECT author_id, MAX(created_at) AS latest_created_at
+        FROM blog_posts
+        WHERE status = 'published'
+        GROUP BY author_id
+    ) latest ON latest.author_id = bp1.author_id AND latest.latest_created_at = bp1.created_at
+    WHERE bp1.status = 'published'
+) bp ON bp.author_id = lf.localist_id
+INNER JOIN users au ON au.id = bp.author_id
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM notifications n
+    WHERE n.recipient_id = lf.follower_id
+      AND n.actor_id = bp.author_id
+      AND n.type = 'new_post'
+      AND n.target_id = bp.id
+);
