@@ -2,13 +2,14 @@
 // pages/write_post.php
 require_once __DIR__ . '/../includes/header.php';
 require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/helpers.php';
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: ' . BASE_URL . '/pages/auth/login.php');
     exit;
 }
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'host') {
+if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'host') {
     header('Location: ' . BASE_URL . '/pages/blog.php?error=localists_only');
     exit;
 }
@@ -94,6 +95,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         try {
             if ($post_id) {
+                $previousStatus = $post['status'] ?? 'draft';
+
                 // Editing existing
                 // Check slug uniqueness
                 $sStmt = $pdo->prepare("SELECT COUNT(*) FROM blog_posts WHERE slug = ? AND id != ?");
@@ -115,6 +118,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $updateStmt->execute([
                     $title, $slug, $excerpt, $safe_content, $cover_image_path, $category, $tags, $read_time, $status, $post_id, $user_id
                 ]);
+
+                if ($previousStatus !== 'published' && $status === 'published') {
+                    notifyFollowersOfNewPost($pdo, (int)$user_id, (int)$post_id, $slug, $title);
+                }
+
                 $success = "Post updated successfully!";
                 
                 // Refresh post data
@@ -142,6 +150,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $user_id, $title, $slug, $excerpt, $safe_content, $cover_image_path, $category, $tags, $status, $read_time
                 ]);
                 $post_id = $pdo->lastInsertId();
+
+                if ($status === 'published') {
+                    notifyFollowersOfNewPost($pdo, (int)$user_id, (int)$post_id, $slug, $title);
+                }
+
                 $success = "Post created successfully!";
                 
                 header("Location: write_post.php?id=$post_id&success=1");

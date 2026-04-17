@@ -16,6 +16,22 @@ CREATE TABLE IF NOT EXISTS localist_follows (
     UNIQUE KEY uq_localist_follows_pair (follower_id, localist_id)
 );
 
+CREATE TABLE IF NOT EXISTS notifications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    recipient_id INT NOT NULL,
+    actor_id INT DEFAULT NULL,
+    type VARCHAR(50) NOT NULL,
+    title VARCHAR(150) NOT NULL,
+    message VARCHAR(255) NOT NULL,
+    url VARCHAR(255) DEFAULT NULL,
+    target_id INT DEFAULT NULL,
+    is_read BOOLEAN DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_notifications_recipient FOREIGN KEY (recipient_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_notifications_actor FOREIGN KEY (actor_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+
 -- Make the two original experiences render with reliable public image links.
 UPDATE experiences
 SET image_url = 'https://images.pexels.com/photos/1907246/pexels-photo-1907246.jpeg?auto=compress&cs=tinysrgb&w=900',

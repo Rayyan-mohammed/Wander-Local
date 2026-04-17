@@ -161,6 +161,21 @@ CREATE TABLE `localist_follows` (
   UNIQUE(`follower_id`, `localist_id`)
 );
 
+CREATE TABLE `notifications` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `recipient_id` INT NOT NULL,
+  `actor_id` INT DEFAULT NULL,
+  `type` VARCHAR(50) NOT NULL,
+  `title` VARCHAR(150) NOT NULL,
+  `message` VARCHAR(255) NOT NULL,
+  `url` VARCHAR(255) DEFAULT NULL,
+  `target_id` INT DEFAULT NULL,
+  `is_read` BOOLEAN DEFAULT 0,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`recipient_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`actor_id`) REFERENCES `users`(`id`) ON DELETE SET NULL
+);
+
 CREATE TABLE `password_resets` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `user_id` INT NOT NULL,
@@ -184,6 +199,9 @@ CREATE INDEX idx_blog_author ON blog_posts(author_id);
 CREATE INDEX idx_blog_status ON blog_posts(status);
 CREATE INDEX idx_reviews_reviewer ON reviews(reviewer_id);
 CREATE INDEX idx_localist_follows_localist ON localist_follows(localist_id);
+CREATE INDEX idx_notifications_recipient_read ON notifications(recipient_id, is_read);
+CREATE INDEX idx_notifications_created_at ON notifications(created_at);
+CREATE INDEX idx_notifications_dedupe_new_post ON notifications(recipient_id, type, target_id, actor_id);
 
 -- INSERT SEED DATA
 
@@ -280,6 +298,11 @@ INSERT INTO `localist_follows` (`id`, `follower_id`, `localist_id`) VALUES
 (3, 5, 1),
 (4, 6, 4),
 (5, 5, 4);
+
+INSERT INTO `notifications` (`id`, `recipient_id`, `actor_id`, `type`, `title`, `message`, `url`, `target_id`, `is_read`) VALUES
+(1, 1, 3, 'new_follower', 'You have a new follower', 'David Chen started following you.', '/pages/host.php?id=1', 3, 0),
+(2, 3, 1, 'new_post', 'New story from a localist you follow', 'Elena Rossi published "Top 5 Local Wines to Try in Florence".', '/pages/post.php?slug=top-5-local-wines-florence', 1, 0),
+(3, 5, 2, 'new_post', 'New story from a localist you follow', 'Kenji Tanaka published "Quiet Corners of Kyoto at Dawn".', '/pages/post.php?slug=quiet-corners-of-kyoto-at-dawn', 2, 1);
 
 INSERT INTO `password_resets` (`id`, `user_id`, `token`, `expires_at`) VALUES
 (1, 5, 'reset_token_maya_20260416', '2026-04-16 23:59:59'),

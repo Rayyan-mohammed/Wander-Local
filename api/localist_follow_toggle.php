@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/security.php';
+require_once __DIR__ . '/../includes/helpers.php';
 
 header('Content-Type: application/json');
 
@@ -71,6 +72,17 @@ try {
         $pdo->prepare('INSERT INTO localist_follows (follower_id, localist_id) VALUES (?, ?)')
             ->execute([(int)$currentUser['id'], $localistId]);
         $following = true;
+
+        createNotification(
+            $pdo,
+            $localistId,
+            (int)$currentUser['id'],
+            'new_follower',
+            'You have a new follower',
+            $currentUser['name'] . ' started following you.',
+            '/pages/host.php?id=' . $localistId,
+            (int)$currentUser['id']
+        );
     }
 
     $countStmt = $pdo->prepare('SELECT COUNT(*) FROM localist_follows WHERE localist_id = ?');

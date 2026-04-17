@@ -10,6 +10,17 @@ require_once __DIR__ . '/security.php';
 
 $currentUser = getCurrentUser($pdo);
 $csrfToken = generate_csrf_token();
+$unreadNotifications = 0;
+
+if ($currentUser) {
+    try {
+        $unreadStmt = $pdo->prepare('SELECT COUNT(*) FROM notifications WHERE recipient_id = ? AND is_read = 0');
+        $unreadStmt->execute([(int)$currentUser['id']]);
+        $unreadNotifications = (int)$unreadStmt->fetchColumn();
+    } catch (PDOException $e) {
+        $unreadNotifications = 0;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -76,6 +87,17 @@ $csrfToken = generate_csrf_token();
                 </li>
                 
                 <?php if($currentUser): ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= BASE_URL ?>/pages/following.php">Following</a>
+                    </li>
+                    <li class="nav-item position-relative">
+                        <a class="btn btn-ghost position-relative" href="<?= BASE_URL ?>/pages/notifications.php" title="Notifications">
+                            <i class="fa-regular fa-bell"></i>
+                            <?php if ($unreadNotifications > 0): ?>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;"><?= $unreadNotifications > 99 ? '99+' : $unreadNotifications ?></span>
+                            <?php endif; ?>
+                        </a>
+                    </li>
                     <li class="nav-item position-relative" @click.away="userDropdownOpen = false">
                         <button class="btn btn-ghost d-flex align-items-center gap-2 p-1 rounded-pill" @click="userDropdownOpen = !userDropdownOpen">
                             <img src="<?= htmlspecialchars($currentUser['avatar'] ?? 'https://ui-avatars.com/api/?name='.urlencode($currentUser['name'])) ?>" class="rounded-circle" width="36" height="36" alt="Avatar">
@@ -89,6 +111,8 @@ $csrfToken = generate_csrf_token();
                             <?php else: ?>
                                 <a class="dropdown-item py-2" href="<?= BASE_URL ?>/pages/traveler/dashboard.php"><i class="fa-solid fa-suitcase-rolling text-muted me-2"></i> My Trips</a>
                             <?php endif; ?>
+                            <a class="dropdown-item py-2" href="<?= BASE_URL ?>/pages/following.php"><i class="fa-solid fa-users text-muted me-2"></i> Following Feed</a>
+                            <a class="dropdown-item py-2" href="<?= BASE_URL ?>/pages/notifications.php"><i class="fa-regular fa-bell text-muted me-2"></i> Notifications</a>
                             <hr class="dropdown-divider">
                             <a class="dropdown-item py-2 text-danger" href="<?= BASE_URL ?>/pages/auth/logout.php"><i class="fa-solid fa-sign-out-alt me-2"></i> Logout</a>
                         </div>
@@ -126,6 +150,8 @@ $csrfToken = generate_csrf_token();
                 <li class="nav-item"><a class="nav-link px-0 text-dark" href="<?= BASE_URL ?>/pages/blog.php">Blog</a></li>
                 <hr>
                 <?php if($currentUser): ?>
+                    <li class="nav-item"><a class="nav-link px-0 text-dark" href="<?= BASE_URL ?>/pages/following.php">Following Feed</a></li>
+                    <li class="nav-item"><a class="nav-link px-0 text-dark" href="<?= BASE_URL ?>/pages/notifications.php">Notifications <?php if ($unreadNotifications > 0): ?>(<?= $unreadNotifications > 99 ? '99+' : $unreadNotifications ?>)<?php endif; ?></a></li>
                     <li class="nav-item"><a class="nav-link px-0 text-dark" href="<?= BASE_URL ?>/<?= $currentUser['role'] === 'host' ? 'admin' : 'pages/traveler' ?>/dashboard.php">Dashboard</a></li>
                     <li class="nav-item"><a class="nav-link px-0 text-danger" href="<?= BASE_URL ?>/pages/auth/logout.php">Logout</a></li>
                 <?php else: ?>
